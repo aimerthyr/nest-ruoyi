@@ -1,0 +1,44 @@
+# Build artifacts
+build/
+coverage/
+dist/
+.next/
+.nuxt/
+.output/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Lock files
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json
+yarn.lock
+
+# Generated files
+*.d.ts
+
+# Assets
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+
+# Database
+*.db
+*.sqlite
+
+# Environment
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
