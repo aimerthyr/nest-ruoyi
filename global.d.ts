@@ -9,5 +9,6 @@ declare namespace NodeJS {
     DATABASE_URL: string;
     REDIS_HOST: string;
     REDIS_PORT: string;
+    JWT_SECRET: string
   };
 }

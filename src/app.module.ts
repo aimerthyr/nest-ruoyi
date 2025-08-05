@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './common/database';
 import { RedisModule } from './common/redis/redis.module';
+import { PermissionModule } from './modules/permission/permission.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RedisModule } from './common/redis/redis.module';
     }),
     DatabaseModule,
     RedisModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
