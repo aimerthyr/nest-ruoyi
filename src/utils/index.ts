@@ -1,1 +1,1 @@
-export * from './ajaxResult';
+export * from './ajaxResult.util';

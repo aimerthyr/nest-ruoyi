@@ -1,6 +1,5 @@
-import { AjaxResult } from '@/utils';
 import { DatabaseService } from '@common/database';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { omit } from 'es-toolkit';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -21,14 +20,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   /** 验证通过后 passport 会自动调用 validate 并把 token 解析为签名前的 payload  */
-  async validate(payload: { sub: number }) {
+  async validate(payload: { sub: bigint }) {
     const user = await this._databaseService.sysUser.findUnique({
       where: {
         user_id: payload.sub,
       },
     });
     if (!user) {
-      return AjaxResult.error('用户不存在/密码错误');
+      throw new UnauthorizedException('认证失败，无法访问系统资源');
     }
     // 这里的返回值，会自动绑定到 req.user 上 （剔除掉敏感信息）
     return omit(user, ['password']);

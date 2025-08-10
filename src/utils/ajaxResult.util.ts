@@ -1,3 +1,12 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
+
+/** 自定义的服务类异常 */
+export class ServiceException extends HttpException {
+  constructor(msg = '操作失败', code = 500) {
+    super({ code, msg }, HttpStatus.OK);
+  }
+}
+
 /** 统一的 API 响应类 */
 export class AjaxResult {
   /** 成功的响应（默认响应体） */
@@ -20,10 +29,7 @@ export class AjaxResult {
 
   /** 服务异常 */
   static error(msg = '操作失败', code = 500) {
-    return {
-      code,
-      msg,
-    };
+    return new ServiceException(msg, code);
   }
 
   /** 分页查询 */

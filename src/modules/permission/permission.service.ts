@@ -55,7 +55,7 @@ export class PermissionService {
     // 获取验证码答案
     const answer = await this._redisService.get(`captcha:${loginDto.uuid}`);
     if (answer !== loginDto.code) {
-      return AjaxResult.error('验证码错误');
+      throw AjaxResult.error('验证码错误');
     }
     const user = await this._databaseService.sysUser.findFirst({
       where: {
@@ -63,11 +63,11 @@ export class PermissionService {
       },
     });
     if (!user) {
-      return AjaxResult.error('用户不存在/密码错误');
+      throw AjaxResult.error('用户不存在/密码错误');
     }
     const isPasswordValid = compareSync(loginDto.password, user.password);
     if (!isPasswordValid) {
-      return AjaxResult.error('用户不存在/密码错误');
+      throw AjaxResult.error('用户不存在/密码错误');
     }
     const token = this._generateToken(user.user_id);
     return AjaxResult.customSuccess({

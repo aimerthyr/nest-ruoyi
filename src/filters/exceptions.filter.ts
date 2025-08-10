@@ -1,42 +1,41 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { ServiceException } from '@/utils';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-/** 异常处理（包含所有的错误） */
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(ExceptionsFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: any, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status =
-      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-    const message =
-      exception instanceof HttpException ? exception.getResponse() : 'Internal server error';
+    let code = 500;
+    let msg = '服务器内部错误';
 
-    // 404 没有必要去 log
-    if (status !== HttpStatus.NOT_FOUND) {
-      this.logger.error(
-        `HTTP ${status} Error: ${JSON.stringify(message)}`,
-        exception instanceof Error ? exception.stack : 'No stack trace',
-      );
-      this.logger.error(`Request: ${request.method} ${request.url}`);
+    // 自定义异常从 response 中拿到信息
+    if (exception instanceof ServiceException) {
+      const res: any = exception.getResponse();
+      msg = res.msg;
+      code = res.code;
+    } else {
+      msg = exception.message;
+      code = exception?.getStatus?.();
     }
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      message: typeof message === 'object' ? (message as any).message : message,
+    // 非404错误才打印日志
+    if (code !== 404) {
+      this.logger.error(
+        `业务错误码 ${code}，错误信息: ${msg}，请求路径: ${request.method} ${request.url}`,
+        exception instanceof Error ? exception.stack : '无堆栈信息',
+      );
+    }
+
+    // 返回统一格式，HTTP状态码固定设置为 200
+    response.status(200).json({
+      code,
+      msg,
     });
   }
 }
