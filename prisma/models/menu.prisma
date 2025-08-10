@@ -1,0 +1,28 @@
+/// 菜单权限表
+model SysMenu {
+  menu_id     BigInt    @id @default(autoincrement()) @map("menu_id")
+  menu_name   String    @db.VarChar(50) // 菜单名称
+  parent_id   BigInt    @default(0) // 父菜单ID
+  order_num   Int       @default(0) // 显示顺序
+  path        String    @default("") @db.VarChar(200) // 路由地址
+  component   String?   @db.VarChar(255) // 组件路径，可空
+  query       String?   @db.VarChar(255) // 路由参数，可空
+  route_name  String    @default("") @db.VarChar(50) // 路由名称
+  is_frame    Int       @default(1) // 是否外链（0是 1否）
+  is_cache    Int       @default(0) // 是否缓存（0缓存 1不缓存）
+  menu_type   String    @default("") @db.Char(1) // 菜单类型（M目录 C菜单 F按钮）
+  visible     String    @default("0") @db.Char(1) // 菜单状态（0显示 1隐藏）
+  status      String    @default("0") @db.Char(1) // 菜单状态（0正常 1停用）
+  perms       String?   @db.VarChar(100) // 权限标识，可空
+  icon        String    @default("#") @db.VarChar(100) // 菜单图标
+  create_by   String    @default("") @db.VarChar(64) // 创建者
+  create_time DateTime? // 创建时间，可空
+  update_by   String    @default("") @db.VarChar(64) // 更新者
+  update_time DateTime? @updatedAt // 更新时间，可空
+  remark      String    @default("") @db.VarChar(500) // 备注
+
+  // 创建与菜单的关联关系（虚拟字段，并不是数据库中真实列）
+  roles SysRoleMenu[]
+
+  @@map("sys_menu")
+}

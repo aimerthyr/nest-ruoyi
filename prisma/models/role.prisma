@@ -18,6 +18,8 @@ model SysRole {
 
   // 创建与用户的关联关系（虚拟字段，并不是数据库中真实列）
   users SysUserRole[]
+  // 创建与菜单的关联关系（虚拟字段，并不是数据库中真实列）
+  menus SysRoleMenu[]
 
   @@map("sys_role") // 映射到数据库中的实际表名
 }
