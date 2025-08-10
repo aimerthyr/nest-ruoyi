@@ -40,10 +40,10 @@ export class PermissionService {
     });
   }
 
-  private _generateToken(userId: number) {
+  private _generateToken(userId: bigint) {
     return this._jwtService.sign(
       {
-        sub: userId,
+        sub: userId.toString(),
       },
       {
         secret: process.env.JWT_SECRET,
@@ -69,7 +69,7 @@ export class PermissionService {
     if (!isPasswordValid) {
       return AjaxResult.error('用户不存在/密码错误');
     }
-    const token = this._generateToken(Number(user.user_id));
+    const token = this._generateToken(user.user_id);
     return AjaxResult.customSuccess({
       token,
     });

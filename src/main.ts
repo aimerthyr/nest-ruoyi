@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExceptionsFilter } from './filters/exceptions.filter';
+import { BigintInterceptor } from './interceptors/bigint.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,7 @@ async function bootstrap() {
       transform: true, // 自动转换类型
     }),
   );
+  app.useGlobalInterceptors(new BigintInterceptor());
   await app.listen(3000);
 }
 bootstrap();
