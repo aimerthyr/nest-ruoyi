@@ -1,12 +1,20 @@
+import { AjaxResult } from '@/utils';
+import { DatabaseService } from '@common/database';
 import { RedisService } from '@common/redis';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { compareSync } from 'bcrypt';
 import { createMathExpr } from 'svg-captcha';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class PermissionService {
-  constructor(private readonly _redisService: RedisService) {}
+  constructor(
+    private readonly _redisService: RedisService,
+    private readonly _databaseService: DatabaseService,
+    private readonly _jwtService: JwtService,
+  ) {}
 
   /** 创建算式验证码图片 */
   private _createCaptchaImage(): { uuid: string; img: string } {
@@ -25,16 +33,45 @@ export class PermissionService {
   /** 获取验证码 */
   getCaptchaImage() {
     const { uuid, img } = this._createCaptchaImage();
-    return {
-      msg: '操作成功',
+    return AjaxResult.customSuccess({
       img,
-      code: 200,
-      captchaEnabled: true,
       uuid,
-    };
+      captchaEnabled: true,
+    });
   }
 
-  login(loginDto: LoginDto) {
-    console.log(loginDto);
+  private _generateToken(userId: number) {
+    return this._jwtService.sign(
+      {
+        sub: userId,
+      },
+      {
+        secret: process.env.JWT_SECRET,
+      },
+    );
+  }
+
+  async login(loginDto: LoginDto) {
+    // 获取验证码答案
+    const answer = await this._redisService.get(`captcha:${loginDto.uuid}`);
+    if (answer !== loginDto.code) {
+      return AjaxResult.error('验证码错误');
+    }
+    const user = await this._databaseService.sysUser.findFirst({
+      where: {
+        user_name: loginDto.username,
+      },
+    });
+    if (!user) {
+      return AjaxResult.error('用户不存在/密码错误');
+    }
+    const isPasswordValid = compareSync(loginDto.password, user.password);
+    if (!isPasswordValid) {
+      return AjaxResult.error('用户不存在/密码错误');
+    }
+    const token = this._generateToken(Number(user.user_id));
+    return AjaxResult.customSuccess({
+      token,
+    });
   }
 }

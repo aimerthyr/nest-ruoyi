@@ -1,5 +1,8 @@
+import { AjaxResult } from '@/utils';
+import { DatabaseService } from '@common/database';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { omit } from 'es-toolkit';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 /**
@@ -8,7 +11,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly _databaseService: DatabaseService) {
     /** 这里是告诉 passport 中间件 如何解析 token 以及验证 */
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,8 +21,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   /** 验证通过后 passport 会自动调用 validate 并把 token 解析为签名前的 payload  */
-  async validate(payload: any) {
-    // 这里的返回值，会自动绑定到 req.user 上
-    return { userId: payload.sub, username: payload.username };
+  async validate(payload: { sub: number }) {
+    const user = await this._databaseService.sysUser.findUnique({
+      where: {
+        user_id: payload.sub,
+      },
+    });
+    if (!user) {
+      return AjaxResult.error('用户不存在/密码错误');
+    }
+    // 这里的返回值，会自动绑定到 req.user 上 （剔除掉敏感信息）
+    return omit(user, ['password']);
   }
 }
