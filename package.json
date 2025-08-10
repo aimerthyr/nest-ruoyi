@@ -10,6 +10,7 @@
     "start:dev": "docker compose --env-file .env up -d && prisma generate && nest start --watch --debug",
     "start:prod": "node dist/main",
     "migrate:dev": "dotenv -e .env -- prisma migrate dev && prisma generate",
+    "seed": "node ./prisma/seed.js",
     "prepare": "husky"
   },
   "dependencies": {
