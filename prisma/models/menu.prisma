@@ -16,9 +16,9 @@ model SysMenu {
   perms       String?   @db.VarChar(100) // 权限标识，可空
   icon        String    @default("#") @db.VarChar(100) // 菜单图标
   create_by   String    @default("") @db.VarChar(64) // 创建者
-  create_time DateTime? // 创建时间，可空
+  create_time DateTime? @default(now()) @db.DateTime(0) // 创建时间，可空
   update_by   String    @default("") @db.VarChar(64) // 更新者
-  update_time DateTime? @updatedAt // 更新时间，可空
+  update_time DateTime? @updatedAt @db.DateTime(0) // 更新时间，可空
   remark      String    @default("") @db.VarChar(500) // 备注
 
   // 创建与菜单的关联关系（虚拟字段，并不是数据库中真实列）
