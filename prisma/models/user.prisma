@@ -26,8 +26,10 @@ model SysUser {
   update_time     DateTime @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
   remark          String?  @map("remark") @db.VarChar(500) /// 备注
 
-  // 创建与角色的关联关系（虚拟字段，并不是数据库中真实列）
+  // 创建与用户角色关联表的关联关系（虚拟字段，并不是数据库中真实列）
   roles SysUserRole[]
+  // 创建与用户岗位关联表的关联关系（虚拟字段，并不是数据库中真实列）
+  posts SysUserPost[]
 
   @@map("sys_user")
 }

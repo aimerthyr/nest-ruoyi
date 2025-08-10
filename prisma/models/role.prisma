@@ -16,10 +16,12 @@ model SysRole {
   update_time         DateTime? @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
   remark              String?   @map("remark") @db.VarChar(500) /// 备注
 
-  // 创建与用户的关联关系（虚拟字段，并不是数据库中真实列）
+  // 创建与用户角色关联表的关联关系（虚拟字段，并不是数据库中真实列）
   users SysUserRole[]
-  // 创建与菜单的关联关系（虚拟字段，并不是数据库中真实列）
+  // 创建与角色菜单关联表的关联关系（虚拟字段，并不是数据库中真实列）
   menus SysRoleMenu[]
+  // 创建与角色部门关联表的关联关系（虚拟字段，并不是数据库中真实列）
+  depts SysRoleDept[]
 
   @@map("sys_role") // 映射到数据库中的实际表名
 }

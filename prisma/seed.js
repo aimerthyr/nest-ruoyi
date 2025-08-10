@@ -213,6 +213,41 @@ async function main() {
       ('2', '1059'),
       ('2', '1060');
   `);
+  // 初始化-部门信息表数据
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO sys_dept VALUES
+      (100,  0,   '0',          '若依科技',   0, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (101,  100, '0,100',      '深圳总公司', 1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (102,  100, '0,100',      '长沙分公司', 2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (103,  101, '0,100,101',  '研发部门',   1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (104,  101, '0,100,101',  '市场部门',   2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (105,  101, '0,100,101',  '测试部门',   3, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (106,  101, '0,100,101',  '财务部门',   4, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (107,  101, '0,100,101',  '运维部门',   5, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (108,  102, '0,100,102',  '市场部门',   1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
+      (109,  102, '0,100,102',  '财务部门',   2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
+  `);
+  // 初始化-岗位信息表数据
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO sys_post VALUES
+      (1, 'ceo',  '董事长',    1, '0', 'admin', sysdate(), '', null, ''),
+      (2, 'se',   '项目经理',  2, '0', 'admin', sysdate(), '', null, ''),
+      (3, 'hr',   '人力资源',  3, '0', 'admin', sysdate(), '', null, ''),
+      (4, 'user', '普通员工',  4, '0', 'admin', sysdate(), '', null, '');
+  `);
+  // 初始化-角色部门关联表数据
+  await prisma.$executeRawUnsafe(`
+    insert into sys_role_dept values
+      ('2', '100'),
+      ('2', '101'),
+      ('2', '105');
+  `);
+  // 初始化-用户岗位关联表数据
+  await prisma.$executeRawUnsafe(`
+    insert into sys_user_post values
+      ('1', '1'),
+      ('2', '2');
+  `);
   console.log('数据库初始化完成');
 }
 
