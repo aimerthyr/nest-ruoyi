@@ -1,4 +1,4 @@
-import { AjaxResult } from '@/utils';
+import { AjaxResultUtil } from '@/utils';
 import { DatabaseService } from '@common/database';
 import { RedisService } from '@common/redis';
 import { Injectable } from '@nestjs/common';
@@ -33,7 +33,7 @@ export class PermissionService {
   /** 获取验证码 */
   getCaptchaImage() {
     const { uuid, img } = this._createCaptchaImage();
-    return AjaxResult.customSuccess({
+    return AjaxResultUtil.customSuccess({
       img,
       uuid,
       captchaEnabled: true,
@@ -55,7 +55,7 @@ export class PermissionService {
     // 获取验证码答案
     const answer = await this._redisService.get(`captcha:${loginDto.uuid}`);
     if (answer !== loginDto.code) {
-      throw AjaxResult.error('验证码错误');
+      throw AjaxResultUtil.error('验证码错误');
     }
     const user = await this._databaseService.sysUser.findFirst({
       where: {
@@ -63,14 +63,14 @@ export class PermissionService {
       },
     });
     if (!user) {
-      throw AjaxResult.error('用户不存在/密码错误');
+      throw AjaxResultUtil.error('用户不存在/密码错误');
     }
     const isPasswordValid = compareSync(loginDto.password, user.password);
     if (!isPasswordValid) {
-      throw AjaxResult.error('用户不存在/密码错误');
+      throw AjaxResultUtil.error('用户不存在/密码错误');
     }
     const token = this._generateToken(user.user_id);
-    return AjaxResult.customSuccess({
+    return AjaxResultUtil.customSuccess({
       token,
     });
   }
