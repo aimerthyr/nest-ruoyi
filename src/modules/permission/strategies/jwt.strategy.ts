@@ -5,7 +5,7 @@ import { omit } from 'es-toolkit';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 /**
- * 后续通过在 controller 的方法上使用 @UseGuards(AuthGuard('jwt'))
+ * 后续通过在 controller 的方法上使用 @UseGuards(JwtAuthGuard('jwt'))
  * 即可判断是否允许授权（即登录验证通过）
  */
 @Injectable()
@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
     if (!user) {
-      throw new UnauthorizedException('认证失败，无法访问系统资源');
+      throw new UnauthorizedException('无效的会话，或者会话已过期，请重新登录。');
     }
     // 这里的返回值，会自动绑定到 req.user 上 （剔除掉敏感信息）
     return omit(user, ['password']);
