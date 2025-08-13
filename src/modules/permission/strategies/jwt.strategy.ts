@@ -24,6 +24,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this._databaseService.sysUser.findUnique({
       where: {
         user_id: payload.sub,
+        status: '0', // 只允许正常状态的用户
+        del_flag: '0', // 只允许未删除的用户
       },
     });
     if (!user) {

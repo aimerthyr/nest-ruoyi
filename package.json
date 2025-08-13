@@ -11,6 +11,7 @@
     "start:prod": "node dist/main",
     "migrate:dev": "dotenv -e .env -- prisma migrate dev && prisma generate",
     "seed": "node ./prisma/seed.js",
+    "query": "node ./prisma/query.js",
     "prepare": "husky"
   },
   "dependencies": {

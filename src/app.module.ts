@@ -2,10 +2,13 @@ import { createKeyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './common/database';
 import { RedisModule } from './common/redis/redis.module';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { PermissionGuard } from './guards/permission.guard';
 import { PermissionModule } from './modules/permission/permission.module';
 
 @Module({
@@ -24,7 +27,8 @@ import { PermissionModule } from './modules/permission/permission.module';
         return {
           // 这里可以传入多个，实现多级缓存
           stores: [redisStore],
-          ttl: 10 * 1000,
+          // 默认半小时过期
+          ttl: 30 * 60 * 1000,
         };
       },
     }),
@@ -33,6 +37,16 @@ import { PermissionModule } from './modules/permission/permission.module';
     PermissionModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
+    },
+  ],
 })
 export class AppModule {}

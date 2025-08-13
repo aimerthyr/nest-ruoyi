@@ -6,28 +6,15 @@ async function main() {
   console.log('开始初始化数据库...');
   // 初始化-用户信息表数据
   await prisma.$executeRawUnsafe(`
-    INSERT INTO sys_user (
-      user_id, dept_id, user_name, nick_name, user_type, email, phonenumber, sex, avatar, password,
-      status, del_flag, login_ip, login_date, pwd_update_date, create_by, create_time, update_by, update_time, remark
-    ) VALUES
-      (
-        1, 103, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '',
-        '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0',
-        '127.0.0.1', NOW(), NOW(), 'admin', NOW(), '', NOW(), '管理员'
-      ),
-      (
-        2, 105, 'ry', '若依', '00', 'ry@qq.com', '15666666666', '1', '',
-        '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0',
-        '127.0.0.1', NOW(), NOW(), 'admin', NOW(), '', NOW(), '测试员'
-      )
+    INSERT INTO sys_user VALUES
+      (1,  103, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '', '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0', '127.0.0.1', sysdate(), sysdate(), 'admin', sysdate(), '', sysdate(), '管理员'),
+      (2,  105, 'ry',    '若依', '00', 'ry@qq.com',  '15666666666', '1', '', '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0', '127.0.0.1', sysdate(), sysdate(), 'admin', sysdate(), '', sysdate(), '测试员');
   `);
   // 初始化-角色信息表数据
   await prisma.$executeRawUnsafe(`
-    INSERT INTO sys_role
-      (role_id, role_name, role_key, role_sort, status, del_flag, create_by, create_time, update_by, update_time, remark)
-    VALUES
-      ('1', '超级管理员', 'admin', 1, 1, 1, 'admin', NOW(), '', NOW(), '超级管理员'),
-      ('2', '普通角色', 'common', 2, 2, 1, 'admin', NOW(), '', NOW(), '普通角色');
+    INSERT INTO sys_role VALUES
+      ('1', '超级管理员',  'admin',  1, 1, 1, 1, '0', '0', 'admin', sysdate(), '', null, '超级管理员'),
+      ('2', '普通角色',    'common', 2, 2, 1, 1, '0', '0', 'admin', sysdate(), '', null, '普通角色');
   `);
   // 初始化-用户角色关联表数据
   await prisma.$executeRawUnsafe(`
@@ -237,14 +224,14 @@ async function main() {
   `);
   // 初始化-角色部门关联表数据
   await prisma.$executeRawUnsafe(`
-    insert into sys_role_dept values
+    INSERT INTO sys_role_dept VALUES
       ('2', '100'),
       ('2', '101'),
       ('2', '105');
   `);
   // 初始化-用户岗位关联表数据
   await prisma.$executeRawUnsafe(`
-    insert into sys_user_post values
+    INSERT INTO sys_user_post VALUES
       ('1', '1'),
       ('2', '2');
   `);

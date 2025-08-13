@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@common/*": ["./src/common/*"],
+      "@decorators": ["./src/decorators"],
       "@/*": ["./src/*"]
     }
   }
