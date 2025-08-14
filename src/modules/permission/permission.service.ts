@@ -1,6 +1,8 @@
 import { AjaxResultUtil } from '@/utils/ajaxResult.util';
 import { DatabaseService } from '@common/database';
 import { RedisService } from '@common/redis';
+import { MIN_30 } from '@constants/date';
+import { REDIS_CAPTCHA, REDIS_USER_PERMISSION } from '@constants/redis';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
@@ -23,7 +25,7 @@ export class PermissionService {
       mathMin: 1,
     });
     const uuid = uuidv4();
-    this._redisService.set(`captcha:${uuid}`, text, 15000);
+    this._redisService.set(`${REDIS_CAPTCHA}:${uuid}`, text, 15 * 1000);
     return {
       img: Buffer.from(data).toString('base64'),
       uuid,
@@ -53,7 +55,7 @@ export class PermissionService {
 
   async login(loginDto: LoginDto) {
     // 获取验证码答案
-    const answer = await this._redisService.get(`captcha:${loginDto.uuid}`);
+    const answer = await this._redisService.get(`${REDIS_CAPTCHA}:${loginDto.uuid}`);
     if (answer !== loginDto.code) {
       throw AjaxResultUtil.error('验证码错误');
     }
@@ -76,14 +78,12 @@ export class PermissionService {
   }
 
   /** 判断用户是否具备所有的权限 */
-  async hasAllPermissions(userId: bigint, permissions: string[]): Promise<boolean> {
-    const userPermissions = await this.getUserPermissions(userId);
+  async hasAllPermissions(userPermissions: string[], permissions: string[]): Promise<boolean> {
     return permissions.every(permission => userPermissions.includes(permission));
   }
 
   /** 判断用户是否具备任意其中一个权限 */
-  async hasAnyPermission(userId: bigint, permissions: string[]): Promise<boolean> {
-    const userPermissions = await this.getUserPermissions(userId);
+  async hasAnyPermission(userPermissions: string[], permissions: string[]): Promise<boolean> {
     return permissions.some(permission => userPermissions.includes(permission));
   }
 
@@ -141,15 +141,15 @@ export class PermissionService {
 
   /** 通过 userId 获取用户权限 */
   async getUserPermissions(userId: bigint): Promise<string[]> {
-    const cacheKey = `user:permissions:${userId}`;
+    const cacheKey = `${REDIS_USER_PERMISSION}:${userId}`;
     const cachedPermissions = await this._redisService.get(cacheKey);
     if (cachedPermissions) {
-      return JSON.parse(cachedPermissions);
+      return cachedPermissions;
     }
     // 缓存未命中，从数据库查询
     const permissions = await this._queryUserPermission(userId);
     // 缓存权限信息，设置30分钟过期
-    await this._redisService.set(cacheKey, JSON.stringify(permissions), 30 * 60 * 1000);
+    await this._redisService.set(cacheKey, permissions, MIN_30);
     return permissions;
   }
 }

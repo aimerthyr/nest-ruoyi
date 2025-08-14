@@ -1,10 +1,7 @@
+import { bigintReplacer } from '@/utils';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-function bigintReplacer(_key: string, value: any) {
-  return typeof value === 'bigint' ? value.toString() : value;
-}
 
 @Injectable()
 export class BigintInterceptor implements NestInterceptor {

@@ -20,6 +20,7 @@
     "paths": {
       "@common/*": ["./src/common/*"],
       "@decorators": ["./src/decorators"],
+      "@constants/*": ["./src/constants/*"],
       "@/*": ["./src/*"]
     }
   }

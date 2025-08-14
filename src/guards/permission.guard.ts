@@ -22,15 +22,20 @@ export class PermissionGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest<Request>();
-    const userId = request.user.user_id;
+    const userPermissions = request.user.permissions;
+    // 如果是超级管理员，则直接允许
+    if (request.user.roleKeys.includes('admin')) return true;
     let hasPermission = false;
     const { permissions, mode } = permissionMeta;
     switch (mode) {
       case 'any':
-        hasPermission = await this.permissionService.hasAnyPermission(userId, permissions);
+        hasPermission = await this.permissionService.hasAnyPermission(userPermissions, permissions);
         break;
       case 'all':
-        hasPermission = await this.permissionService.hasAllPermissions(userId, permissions);
+        hasPermission = await this.permissionService.hasAllPermissions(
+          userPermissions,
+          permissions,
+        );
         break;
     }
     if (!hasPermission) {
