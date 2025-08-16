@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "start:dev": "docker compose --env-file .env up -d && prisma generate && nest start --watch --debug",
+    "start:dev": "docker compose --env-file .env up -d && prisma generate && nest start --watch --debug --inspect=0.0.0.0:9229",
     "start:prod": "node dist/main",
     "migrate:dev": "dotenv -e .env -- prisma migrate dev && prisma generate",
     "seed": "swc ./prisma/seed.ts | node",

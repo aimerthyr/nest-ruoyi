@@ -3,7 +3,6 @@ import { DatabaseService } from '@common/database';
 import { RedisService } from '@common/redis';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { omit } from 'es-toolkit';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PermissionService } from '../permission.service';
@@ -40,6 +39,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         status: '0', // 只允许正常状态的用户
         del_flag: '0', // 只允许未删除的用户
       },
+      omit: {
+        password: true,
+      },
       include: {
         roles: {
           include: {
@@ -59,7 +61,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const permission = await this._permissionService.getUserPermissions(user.user_id);
     const userInfo: Request['user'] = {
-      ...omit(user, ['password']),
+      ...user,
       roleKeys: user.roles
         .filter(v => v.role.status === '0' && v.role.del_flag === '0')
         .map(role => role.role.role_key),

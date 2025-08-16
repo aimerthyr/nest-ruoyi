@@ -1,3 +1,4 @@
+import { isSuperAdmin } from '@/utils';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -24,7 +25,7 @@ export class PermissionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const userPermissions = request.user.permissions;
     // 如果是超级管理员，则直接允许
-    if (request.user.roleKeys.includes('admin')) return true;
+    if (isSuperAdmin(request.user.roleKeys)) return true;
     let hasPermission = false;
     const { permissions, mode } = permissionMeta;
     switch (mode) {

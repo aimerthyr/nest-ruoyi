@@ -1,3 +1,4 @@
+import { isSuperAdmin } from '@/utils';
 import { AjaxResultUtil } from '@/utils/ajaxResult.util';
 import { DatabaseService } from '@common/database';
 import { RedisService } from '@common/redis';
@@ -9,6 +10,7 @@ import { compareSync } from 'bcrypt';
 import { createMathExpr } from 'svg-captcha';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginDto } from './dto/login.dto';
+import { buildRouteTree } from './permission.util';
 
 @Injectable()
 export class PermissionService {
@@ -33,7 +35,7 @@ export class PermissionService {
   }
 
   /** 获取验证码 */
-  getCaptchaImage() {
+  async getCaptchaImage() {
     const { uuid, img } = this._createCaptchaImage();
     return AjaxResultUtil.customSuccess({
       img,
@@ -75,6 +77,75 @@ export class PermissionService {
     return AjaxResultUtil.customSuccess({
       token,
     });
+  }
+
+  async getUserInfo(user: User) {
+    const userInfo = await this._databaseService.sysUser.findUnique({
+      where: {
+        user_id: user.user_id,
+      },
+      omit: {
+        password: true,
+      },
+      include: {
+        roles: {
+          include: {
+            role: {},
+          },
+        },
+      },
+    });
+    const deptInfo = await this._databaseService.sysDept.findUnique({
+      where: {
+        dept_id: userInfo!.dept_id!,
+      },
+    });
+    return AjaxResultUtil.customSuccess({
+      // TODO 需要结合参数配置表中是否开启初始密码修改策略进行判断
+      isDefaultModifyPwd: false,
+      // TODO 需要结合参数配置表中是否设置密码更新周期进行判断
+      isPasswordExpired: false,
+      permissions: isSuperAdmin(user.roleKeys) ? ['*:*:*'] : user.permissions,
+      roles: user.roleKeys,
+      user: {
+        ...userInfo,
+        roles: userInfo?.roles.map(v => v.role),
+        dept: deptInfo,
+      },
+    });
+  }
+
+  async getRouters(roleKeys: string[]) {
+    const list = await this._queryUserMenuList(roleKeys);
+    return AjaxResultUtil.success(buildRouteTree(list));
+  }
+
+  /** 查询用户可以访问的菜单列表 */
+  async _queryUserMenuList(roleKeys: string[]) {
+    const roleIds = await this._databaseService.sysRole.findMany({
+      where: {
+        role_key: {
+          in: roleKeys,
+        },
+      },
+      select: {
+        role_id: true,
+      },
+    });
+    const menu = await this._databaseService.sysRoleMenu.findMany({
+      where: isSuperAdmin(roleKeys)
+        ? {}
+        : {
+            role_id: {
+              in: roleIds.map(v => v.role_id),
+            },
+          },
+      include: {
+        menu: {},
+      },
+      distinct: ['menu_id'],
+    });
+    return menu.map(v => v.menu).filter(v => v.status === '0');
   }
 
   /** 判断用户是否具备所有的权限 */

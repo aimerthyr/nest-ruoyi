@@ -1,10 +1,12 @@
 import { SysUser } from '@prisma/client';
 
-interface User extends Omit<SysUser, 'password'> {
-  /** 角色的 key 字符串列表 */
-  roleKeys: string[];
-  /** 权限字符串列表 */
-  permissions: string[];
+declare global {
+  interface User extends Omit<SysUser, 'password'> {
+    /** 角色的 key 字符串列表 */
+    roleKeys: string[];
+    /** 权限字符串列表 */
+    permissions: string[];
+  }
 }
 
 // 命名空间 namespace 如果你在当前文件中使用了 import ，会将当前文件变成模块作用域， 那必须加 global 才能实现类型合并

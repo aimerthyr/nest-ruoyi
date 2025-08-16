@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-/** 初始化数据库中的数据（没必要使用.ts） */
+/** 初始化数据库中的数据 */
 async function main() {
   console.log('开始初始化数据库...');
   // 初始化-用户信息表数据

@@ -1,5 +1,5 @@
 import { Public } from '@decorators';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { PermissionService } from './permission.service';
@@ -18,5 +18,15 @@ export class PermissionController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.permissionService.login(loginDto);
+  }
+
+  @Get('getInfo')
+  getInfo(@Req() req: Request) {
+    return this.permissionService.getUserInfo(req.user);
+  }
+
+  @Get('getRouters')
+  getRouters(@Req() req: Request) {
+    return this.permissionService.getRouters(req.user.roleKeys);
   }
 }
