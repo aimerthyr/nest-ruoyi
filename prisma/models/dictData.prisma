@@ -1,0 +1,21 @@
+/// 字典数据表
+model SysDictData {
+  dict_code   BigInt    @id @default(autoincrement()) @map("dict_code") /// 字典编码
+  dict_sort   Int       @default(0) @map("dict_sort") /// 字典排序
+  dict_label  String    @default("") @map("dict_label") @db.VarChar(100) /// 字典标签
+  dict_value  String    @default("") @map("dict_value") @db.VarChar(100) /// 字典键值
+  dict_type   String    @default("") @map("dict_type") @db.VarChar(100) /// 字典类型
+  css_class   String?   @map("css_class") @db.VarChar(100) /// 样式属性（其他样式扩展）
+  list_class  String?   @map("list_class") @db.VarChar(100) /// 表格回显样式
+  is_default  String    @default("N") @map("is_default") @db.Char(1) /// 是否默认（Y是 N否）
+  status      String    @default("0") @map("status") @db.Char(1) /// 状态（0正常 1停用）
+  create_by   String?   @default("") @map("create_by") @db.VarChar(64) /// 创建者
+  create_time DateTime? @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间，可空
+  update_by   String?   @default("") @map("update_by") @db.VarChar(64) /// 更新者
+  update_time DateTime? @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
+  remark      String?   @map("remark") @db.VarChar(500) /// 备注
+
+  sys_dict_type SysDictType @relation(fields: [dict_type], references: [dict_type], onDelete: Cascade)
+
+  @@map("sys_dict_data")
+}

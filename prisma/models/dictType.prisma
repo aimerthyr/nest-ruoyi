@@ -1,0 +1,16 @@
+/// 字典类型表
+model SysDictType {
+  dict_id     BigInt    @id @default(autoincrement()) @map("dict_id") /// 字典主键
+  dict_name   String    @default("") @map("dict_name") @db.VarChar(100) /// 字典名称
+  dict_type   String    @unique @map("dict_type") @db.VarChar(100) /// 字典类型
+  status      String    @default("0") @map("status") @db.Char(1) /// 状态（0正常 1停用）
+  create_by   String?   @default("") @map("create_by") @db.VarChar(64) /// 创建者
+  create_time DateTime? @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间，可空
+  update_by   String?   @default("") @map("update_by") @db.VarChar(64) /// 更新者
+  update_time DateTime? @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
+  remark      String?   @map("remark") @db.VarChar(500) /// 备注
+
+  dict_data SysDictData[]
+
+  @@map("sys_dict_type")
+}

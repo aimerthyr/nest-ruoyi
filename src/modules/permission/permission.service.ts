@@ -101,9 +101,9 @@ export class PermissionService {
       },
     });
     return AjaxResultUtil.customSuccess({
-      // TODO 需要结合参数配置表中是否开启初始密码修改策略进行判断
+      // TODO: 需要结合参数配置表中是否开启初始密码修改策略进行判断
       isDefaultModifyPwd: false,
-      // TODO 需要结合参数配置表中是否设置密码更新周期进行判断
+      // TODO: 需要结合参数配置表中是否设置密码更新周期进行判断
       isPasswordExpired: false,
       permissions: isSuperAdmin(user.roleKeys) ? ['*:*:*'] : user.permissions,
       roles: user.roleKeys,

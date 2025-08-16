@@ -4,27 +4,31 @@ const prisma = new PrismaClient();
 
 /** 初始化数据库中的数据 */
 async function main() {
-  console.log('开始初始化数据库...');
-  // 初始化-用户信息表数据
-  await prisma.$executeRawUnsafe(`
+  prisma.$transaction(async tx => {
+    console.log('开始初始化数据库...');
+    await tx.$executeRawUnsafe(`SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;`);
+    await tx.$executeRawUnsafe(`SET CHARACTER SET utf8mb4;`);
+    await tx.$executeRawUnsafe(`SET collation_connection = utf8mb4_unicode_ci;`);
+    // 初始化-用户信息表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_user VALUES
       (1,  103, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '', '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0', '127.0.0.1', sysdate(), sysdate(), 'admin', sysdate(), '', sysdate(), '管理员'),
       (2,  105, 'ry',    '若依', '00', 'ry@qq.com',  '15666666666', '1', '', '$2b$10$eTbfgPcgS.Zv69pKnrccIOiIkK3vxbMMWnK7LLFps4gu9wAmwQroO', '0', '0', '127.0.0.1', sysdate(), sysdate(), 'admin', sysdate(), '', sysdate(), '测试员');
   `);
-  // 初始化-角色信息表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-角色信息表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_role VALUES
       ('1', '超级管理员',  'admin',  1, 1, 1, 1, '0', '0', 'admin', sysdate(), '', null, '超级管理员'),
       ('2', '普通角色',    'common', 2, 2, 1, 1, '0', '0', 'admin', sysdate(), '', null, '普通角色');
   `);
-  // 初始化-用户角色关联表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-用户角色关联表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_user_role VALUES
       ('1', '1'),
       ('2', '2');
   `);
-  // 初始化-菜单信息表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-菜单信息表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_menu VALUES
       ('1', '系统管理', '0', '1', 'system', null, '', '', 1, 0, 'M', '0', '0', '', 'system', 'admin', sysdate(), '', null, '系统管理目录'),
       ('2', '系统监控', '0', '2', 'monitor', null, '', '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', sysdate(), '', null, '系统监控目录'),
@@ -112,8 +116,8 @@ async function main() {
       ('1059', '预览代码', '116', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview', '#', 'admin', sysdate(), '', null, ''),
       ('1060', '生成代码', '116', '6', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', sysdate(), '', null, '');
   `);
-  // 初始化-角色菜单关联表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-角色菜单关联表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_role_menu VALUES
       ('2', '1'),
       ('2', '2'),
@@ -201,8 +205,8 @@ async function main() {
       ('2', '1059'),
       ('2', '1060');
   `);
-  // 初始化-部门信息表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-部门信息表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_dept VALUES
       (100,  0,   '0',          '若依科技',   0, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
       (101,  100, '0,100',      '深圳总公司', 1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
@@ -215,28 +219,76 @@ async function main() {
       (108,  102, '0,100,102',  '市场部门',   1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null),
       (109,  102, '0,100,102',  '财务部门',   2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
   `);
-  // 初始化-岗位信息表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-岗位信息表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_post VALUES
       (1, 'ceo',  '董事长',    1, '0', 'admin', sysdate(), '', null, ''),
       (2, 'se',   '项目经理',  2, '0', 'admin', sysdate(), '', null, ''),
       (3, 'hr',   '人力资源',  3, '0', 'admin', sysdate(), '', null, ''),
       (4, 'user', '普通员工',  4, '0', 'admin', sysdate(), '', null, '');
   `);
-  // 初始化-角色部门关联表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-角色部门关联表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_role_dept VALUES
       ('2', '100'),
       ('2', '101'),
       ('2', '105');
   `);
-  // 初始化-用户岗位关联表数据
-  await prisma.$executeRawUnsafe(`
+    // 初始化-用户岗位关联表数据
+    await tx.$executeRawUnsafe(`
     INSERT INTO sys_user_post VALUES
       ('1', '1'),
       ('2', '2');
   `);
-  console.log('数据库初始化完成');
+    // 初始化-字典类型表数据
+    await tx.$executeRawUnsafe(`
+    INSERT INTO sys_dict_type VALUES
+      (1,  '用户性别', 'sys_user_sex',        '0', 'admin', sysdate(), '', null, '用户性别列表'),
+      (2,  '菜单状态', 'sys_show_hide',       '0', 'admin', sysdate(), '', null, '菜单状态列表'),
+      (3,  '系统开关', 'sys_normal_disable',  '0', 'admin', sysdate(), '', null, '系统开关列表'),
+      (4,  '任务状态', 'sys_job_status',      '0', 'admin', sysdate(), '', null, '任务状态列表'),
+      (5,  '任务分组', 'sys_job_group',       '0', 'admin', sysdate(), '', null, '任务分组列表'),
+      (6,  '系统是否', 'sys_yes_no',          '0', 'admin', sysdate(), '', null, '系统是否列表'),
+      (7,  '通知类型', 'sys_notice_type',     '0', 'admin', sysdate(), '', null, '通知类型列表'),
+      (8,  '通知状态', 'sys_notice_status',   '0', 'admin', sysdate(), '', null, '通知状态列表'),
+      (9,  '操作类型', 'sys_oper_type',       '0', 'admin', sysdate(), '', null, '操作类型列表'),
+      (10, '系统状态', 'sys_common_status',   '0', 'admin', sysdate(), '', null, '登录状态列表');
+  `);
+    // 初始化-字典数据表数据
+    await tx.$executeRawUnsafe(`
+    INSERT INTO sys_dict_data VALUES
+      (1,  1,  '男',       '0',       'sys_user_sex',        '',   '',        'Y', '0', 'admin', sysdate(), '', null, '性别男'),
+      (2,  2,  '女',       '1',       'sys_user_sex',        '',   '',        'N', '0', 'admin', sysdate(), '', null, '性别女'),
+      (3,  3,  '未知',     '2',       'sys_user_sex',        '',   '',        'N', '0', 'admin', sysdate(), '', null, '性别未知'),
+      (4,  1,  '显示',     '0',       'sys_show_hide',       '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '显示菜单'),
+      (5,  2,  '隐藏',     '1',       'sys_show_hide',       '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '隐藏菜单'),
+      (6,  1,  '正常',     '0',       'sys_normal_disable',  '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '正常状态'),
+      (7,  2,  '停用',     '1',       'sys_normal_disable',  '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '停用状态'),
+      (8,  1,  '正常',     '0',       'sys_job_status',      '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '正常状态'),
+      (9,  2,  '暂停',     '1',       'sys_job_status',      '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '停用状态'),
+      (10, 1,  '默认',     'DEFAULT', 'sys_job_group',       '',   '',        'Y', '0', 'admin', sysdate(), '', null, '默认分组'),
+      (11, 2,  '系统',     'SYSTEM',  'sys_job_group',       '',   '',        'N', '0', 'admin', sysdate(), '', null, '系统分组'),
+      (12, 1,  '是',       'Y',       'sys_yes_no',          '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '系统默认是'),
+      (13, 2,  '否',       'N',       'sys_yes_no',          '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '系统默认否'),
+      (14, 1,  '通知',     '1',       'sys_notice_type',     '',   'warning', 'Y', '0', 'admin', sysdate(), '', null, '通知'),
+      (15, 2,  '公告',     '2',       'sys_notice_type',     '',   'success', 'N', '0', 'admin', sysdate(), '', null, '公告'),
+      (16, 1,  '正常',     '0',       'sys_notice_status',   '',   'primary', 'Y', '0', 'admin', sysdate(), '', null, '正常状态'),
+      (17, 2,  '关闭',     '1',       'sys_notice_status',   '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '关闭状态'),
+      (18, 99, '其他',     '0',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', sysdate(), '', null, '其他操作'),
+      (19, 1,  '新增',     '1',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', sysdate(), '', null, '新增操作'),
+      (20, 2,  '修改',     '2',       'sys_oper_type',       '',   'info',    'N', '0', 'admin', sysdate(), '', null, '修改操作'),
+      (21, 3,  '删除',     '3',       'sys_oper_type',       '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '删除操作'),
+      (22, 4,  '授权',     '4',       'sys_oper_type',       '',   'primary', 'N', '0', 'admin', sysdate(), '', null, '授权操作'),
+      (23, 5,  '导出',     '5',       'sys_oper_type',       '',   'warning', 'N', '0', 'admin', sysdate(), '', null, '导出操作'),
+      (24, 6,  '导入',     '6',       'sys_oper_type',       '',   'warning', 'N', '0', 'admin', sysdate(), '', null, '导入操作'),
+      (25, 7,  '强退',     '7',       'sys_oper_type',       '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '强退操作'),
+      (26, 8,  '生成代码', '8',       'sys_oper_type',       '',   'warning', 'N', '0', 'admin', sysdate(), '', null, '生成操作'),
+      (27, 9,  '清空数据', '9',       'sys_oper_type',       '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '清空操作'),
+      (28, 1,  '成功',     '0',       'sys_common_status',   '',   'primary', 'N', '0', 'admin', sysdate(), '', null, '正常状态'),
+      (29, 2,  '失败',     '1',       'sys_common_status',   '',   'danger',  'N', '0', 'admin', sysdate(), '', null, '停用状态');
+  `);
+    console.log('数据库初始化完成');
+  });
 }
 
 main()
