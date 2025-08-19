@@ -10,6 +10,7 @@ import { RedisModule } from './common/redis/redis.module';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { PermissionModule } from './modules/permission/permission.module';
+import { SystemModule } from './modules/system/system.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PermissionModule } from './modules/permission/permission.module';
     DatabaseModule,
     RedisModule,
     PermissionModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [
