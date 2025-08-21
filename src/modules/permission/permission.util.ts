@@ -1,6 +1,6 @@
 import { SysMenu } from '@prisma/client';
 import { capitalize } from 'es-toolkit';
-import { MenuItem } from './vo/route.vo';
+import { MenuItemVO } from './vo/route.vo';
 
 type MenuChildren = SysMenu & { children?: MenuChildren[] };
 
@@ -51,7 +51,7 @@ function getPath(menu: SysMenu): string {
 }
 
 /** 构建前端路由 */
-export function buildRouteTree(menuList: MenuChildren[]): MenuItem[] {
+export function buildRouteTree(menuList: MenuChildren[]): MenuItemVO[] {
   const menuMap = new Map<bigint, MenuChildren>();
   const result: MenuChildren[] = [];
 
@@ -80,9 +80,9 @@ export function buildRouteTree(menuList: MenuChildren[]): MenuItem[] {
   sortMenus(result);
 
   // 构建路由
-  const buildRoutes = (menus: MenuChildren[]): MenuItem[] => {
+  const buildRoutes = (menus: MenuChildren[]): MenuItemVO[] => {
     return menus.map(menu => {
-      const route: MenuItem = {
+      const route: MenuItemVO = {
         component: getComponent(menu),
         hidden: menu.visible === '1',
         meta: {

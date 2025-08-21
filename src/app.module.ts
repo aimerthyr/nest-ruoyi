@@ -1,3 +1,4 @@
+import { MIN_30 } from '@constants/date';
 import { createKeyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { PermissionModule } from './modules/permission/permission.module';
 import { SystemModule } from './modules/system/system.module';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { SystemModule } from './modules/system/system.module';
           // 这里可以传入多个，实现多级缓存
           stores: [redisStore],
           // 默认半小时过期
-          ttl: 30 * 60 * 1000,
+          ttl: MIN_30,
         };
       },
     }),
@@ -37,6 +39,7 @@ import { SystemModule } from './modules/system/system.module';
     RedisModule,
     PermissionModule,
     SystemModule,
+    ServicesModule,
   ],
   controllers: [AppController],
   providers: [

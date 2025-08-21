@@ -1,7 +1,7 @@
 import { Public } from '@decorators';
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { LoginDto } from './dto/login.dto';
+import { LoginDTO } from './dto/login.dto';
 import { PermissionService } from './permission.service';
 
 @Controller()
@@ -16,7 +16,7 @@ export class PermissionController {
 
   @Public()
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
+  login(@Body() loginDto: LoginDTO) {
     return this.permissionService.login(loginDto);
   }
 

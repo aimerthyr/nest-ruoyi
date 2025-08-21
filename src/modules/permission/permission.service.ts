@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { createMathExpr } from 'svg-captcha';
 import { v4 as uuidv4 } from 'uuid';
-import { LoginDto } from './dto/login.dto';
+import { LoginDTO } from './dto/login.dto';
 import { buildRouteTree } from './permission.util';
 
 @Injectable()
@@ -55,7 +55,7 @@ export class PermissionService {
     );
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDTO) {
     // 获取验证码答案
     const answer = await this._redisService.get(`${REDIS_CAPTCHA}:${loginDto.uuid}`);
     if (answer !== loginDto.code) {

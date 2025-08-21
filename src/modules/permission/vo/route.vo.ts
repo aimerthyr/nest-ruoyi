@@ -7,7 +7,7 @@ interface MenuMeta {
 }
 
 // 菜单项类型
-export interface MenuItem {
+export interface MenuItemVO {
   name: string; // 菜单名称
   path: string; // 路径或外链
   hidden: boolean; // 是否隐藏
@@ -15,5 +15,5 @@ export interface MenuItem {
   redirect?: string; // 可选重定向
   alwaysShow?: boolean; // 可选，是否总是显示
   meta: MenuMeta; // 菜单 meta 信息
-  children?: MenuItem[]; // 可选子菜单
+  children?: MenuItemVO[]; // 可选子菜单
 }
