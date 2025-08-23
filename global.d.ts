@@ -1,4 +1,5 @@
 import { SysUser } from '@prisma/client';
+import { DataScopeFilter } from  '@common/types'
 
 declare global {
   interface User extends Omit<SysUser, 'password'> {
@@ -31,5 +32,6 @@ declare global {
 declare module 'express' {
   interface Request {
     user: User;
+    dataScopeFilter: DataScopeFilter
   }
 }

@@ -1,15 +1,16 @@
-import { MIN_30 } from '@constants/date';
 import { createKeyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './common/database';
 import { RedisModule } from './common/redis/redis.module';
+import { MIN_30 } from './constants';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { DataScopeInterceptor } from './interceptors';
 import { PermissionModule } from './modules/permission/permission.module';
 import { SystemModule } from './modules/system/system.module';
 import { ServicesModule } from './services/services.module';
@@ -51,6 +52,10 @@ import { ServicesModule } from './services/services.module';
     {
       provide: APP_GUARD,
       useClass: PermissionGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataScopeInterceptor,
     },
   ],
 })

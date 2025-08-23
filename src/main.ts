@@ -13,6 +13,9 @@ async function bootstrap() {
       whitelist: true, // 自动剥离无效字段
       forbidNonWhitelisted: true, // 出现非法字段直接抛错，提升安全性
       transform: true, // 自动转换类型
+      transformOptions: {
+        enableImplicitConversion: true, // 启用隐式类型转换
+      },
     }),
   );
   app.useGlobalInterceptors(new BigintInterceptor());
