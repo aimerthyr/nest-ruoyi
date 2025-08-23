@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 /** 用于测试 prisma 语法 */
 async function main() {
   const result = await prisma.sysUser.findUnique({
-    where: { user_id: 2 },
+    where: { userId: 2 },
     include: {
       roles: {
         include: {

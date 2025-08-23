@@ -1,30 +1,30 @@
 /// 用户信息表
 model SysUser {
   // @id 代表主键（一般都需要设置自增）
-  user_id         BigInt   @id @default(autoincrement()) @map("user_id") /// 用户ID
-  dept_id         BigInt?  @map("dept_id") /// 部门ID
+  userId        BigInt   @id @default(autoincrement()) @map("user_id") /// 用户ID
+  deptId        BigInt?  @map("dept_id") /// 部门ID
   // VarChar 可变长度（最大是 30 ）
-  user_name       String   @map("user_name") @db.VarChar(30) /// 用户账号
-  nick_name       String   @map("nick_name") @db.VarChar(30) /// 用户昵称
+  userName      String   @map("user_name") @db.VarChar(30) /// 用户账号
+  nickName      String   @map("nick_name") @db.VarChar(30) /// 用户昵称
   // 作为用户来源和系统边界控制（和角色是两个维度的控制， user_type 控制的是“属于哪个端/系统”， 角色 控制的是“能做哪些事，有哪些权限”）
-  user_type       String   @default("00") @map("user_type") @db.VarChar(2) /// 用户类型（00系统用户）
-  email           String   @default("") @map("email") @db.VarChar(50) /// 用户邮箱
-  phonenumber     String   @default("") @map("phonenumber") @db.VarChar(11) /// 手机号码
+  userType      String   @default("00") @map("user_type") @db.VarChar(2) /// 用户类型（00系统用户）
+  email         String   @default("") @map("email") @db.VarChar(50) /// 用户邮箱
+  phonenumber   String   @default("") @map("phonenumber") @db.VarChar(11) /// 手机号码
   // Char 固定长度（不够的话自动补空格）
-  sex             String   @default("0") @map("sex") @db.Char(1) /// 用户性别（0男 1女 2未知）
-  avatar          String   @default("") @map("avatar") @db.VarChar(100) /// 头像地址
-  password        String   @default("") @map("password") @db.VarChar(100) /// 密码
-  status          String   @default("0") @map("status") @db.Char(1) /// 账号状态（0正常 1停用）
+  sex           String   @default("0") @map("sex") @db.Char(1) /// 用户性别（0男 1女 2未知）
+  avatar        String   @default("") @map("avatar") @db.VarChar(100) /// 头像地址
+  password      String   @default("") @map("password") @db.VarChar(100) /// 密码
+  status        String   @default("0") @map("status") @db.Char(1) /// 账号状态（0正常 1停用）
   // 不使用 1 是为了和 status 做区分（摈弃为了可拓展，留 1 作为一个中间态，例如待审核删除）
-  del_flag        String   @default("0") @map("del_flag") @db.Char(1) /// 删除标志（0代表存在 2代表删除）
-  login_ip        String   @default("") @map("login_ip") @db.VarChar(128) /// 最后登录IP
-  login_date      DateTime @map("login_date") @db.DateTime(0) /// 最后登录时间
-  pwd_update_date DateTime @map("pwd_update_date") @db.DateTime(0) /// 密码最后更新时间
-  create_by       String   @default("") @map("create_by") @db.VarChar(64) /// 创建者
-  create_time     DateTime @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间
-  update_by       String   @default("") @map("update_by") @db.VarChar(64) /// 更新者
-  update_time     DateTime @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
-  remark          String?  @map("remark") @db.VarChar(500) /// 备注
+  delFlag       String   @default("0") @map("del_flag") @db.Char(1) /// 删除标志（0代表存在 2代表删除）
+  loginIp       String   @default("") @map("login_ip") @db.VarChar(128) /// 最后登录IP
+  loginDate     DateTime @map("login_date") @db.DateTime(0) /// 最后登录时间
+  pwdUpdateDate DateTime @map("pwd_update_date") @db.DateTime(0) /// 密码最后更新时间
+  createBy      String   @default("") @map("create_by") @db.VarChar(64) /// 创建者
+  createTime    DateTime @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间
+  updateBy      String   @default("") @map("update_by") @db.VarChar(64) /// 更新者
+  updateTime    DateTime @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
+  remark        String?  @map("remark") @db.VarChar(500) /// 备注
 
   // 创建与用户角色关联表的关联关系（虚拟字段，并不是数据库中真实列）
   roles SysUserRole[]

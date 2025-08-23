@@ -10,7 +10,7 @@ export class UserService {
   private async _queryDeptTree() {
     const dept = await this._databaseService.sysDept.findMany({
       where: {
-        del_flag: '0',
+        delFlag: '0',
       },
     });
     return dept;

@@ -6,13 +6,13 @@ export function buildDeptTree(deptList: DeptChildren[]) {
   const deptMap = new Map<bigint, DeptChildren>([]);
   deptList.forEach(v => {
     v.children = [];
-    deptMap.set(v.dept_id, v);
+    deptMap.set(v.deptId, v);
   });
 
   const result: DeptChildren[] = [];
   deptList.forEach(cur => {
-    if (cur.parent_id !== BigInt(0)) {
-      const parent = deptMap.get(cur.parent_id);
+    if (cur.parentId !== BigInt(0)) {
+      const parent = deptMap.get(cur.parentId);
       if (parent) {
         parent.children.push(cur);
       }
@@ -23,8 +23,8 @@ export function buildDeptTree(deptList: DeptChildren[]) {
 
   const createDeptItem = (dept: DeptChildren) => {
     return {
-      id: dept.dept_id,
-      label: dept.dept_name,
+      id: dept.deptId,
+      label: dept.deptName,
       disabled: dept.status === '1',
       children: dept.children?.length ? dept.children.map(createDeptItem) : undefined,
     };

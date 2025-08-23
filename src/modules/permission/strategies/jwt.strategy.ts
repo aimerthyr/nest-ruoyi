@@ -35,9 +35,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const user = await this._databaseService.sysUser.findUnique({
       where: {
-        user_id: payload.sub,
+        userId: payload.sub,
         status: '0', // 只允许正常状态的用户
-        del_flag: '0', // 只允许未删除的用户
+        delFlag: '0', // 只允许未删除的用户
       },
       omit: {
         password: true,
@@ -47,9 +47,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           include: {
             role: {
               select: {
-                role_key: true,
+                roleKey: true,
                 status: true,
-                del_flag: true,
+                delFlag: true,
               },
             },
           },
@@ -59,12 +59,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException('无效的会话，或者会话已过期，请重新登录。');
     }
-    const permission = await this._permissionService.getUserPermissions(user.user_id);
+    const permission = await this._permissionService.getUserPermissions(user.userId);
     const userInfo: Request['user'] = {
       ...user,
       roleKeys: user.roles
-        .filter(v => v.role.status === '0' && v.role.del_flag === '0')
-        .map(role => role.role.role_key),
+        .filter(v => v.role.status === '0' && v.role.delFlag === '0')
+        .map(role => role.role.roleKey),
       permissions: permission,
     };
     await this._redisService.set(cacheKey, userInfo, MIN_30);

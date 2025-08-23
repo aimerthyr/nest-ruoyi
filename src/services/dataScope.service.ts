@@ -21,42 +21,42 @@ export class DataScopeService {
     const orConditions: Partial<DataScopeFilter>[] = [];
     for (let i = 0; i < user.roleKeys.length; i++) {
       const role = await this._databaseService.sysRole.findFirst({
-        where: { role_key: user.roleKeys[i] },
+        where: { roleKey: user.roleKeys[i] },
       });
       if (!role) continue;
-      switch (role.data_scope) {
+      switch (role.dataScope) {
         // 1. 全部数据范围
         case '1':
           return {};
         // 2. 自定义部门
         case '2': {
           const data = await this._databaseService.sysRoleDept.findMany({
-            where: { role_id: role.role_id },
+            where: { roleId: role.roleId },
           });
           if (data.length) {
             orConditions.push({
-              dept_id: { in: data.map(v => v.dept_id) },
+              deptId: { in: data.map(v => v.deptId) },
             });
           }
           break;
         }
         // 3. 本部门
         case '3': {
-          if (user.dept_id) {
+          if (user.deptId) {
             orConditions.push({
-              dept_id: { equals: user.dept_id },
+              deptId: { equals: user.deptId },
             });
           }
           break;
         }
         // 4. 本部门及以下
         case '4': {
-          if (user.dept_id) {
+          if (user.deptId) {
             const data = await this._databaseService.$queryRaw<
               SysDept[]
-            >`SELECT * FROM sys_dept WHERE FIND_IN_SET(${user.dept_id}, ancestors) > 0`;
+            >`SELECT * FROM sys_dept WHERE FIND_IN_SET(${user.deptId}, ancestors) > 0`;
             orConditions.push({
-              dept_id: { in: [...data.map(v => v.dept_id), user.dept_id] },
+              deptId: { in: [...data.map(v => v.deptId), user.deptId] },
             });
           }
           break;
@@ -64,7 +64,7 @@ export class DataScopeService {
         // 5. 仅本人
         case '5': {
           orConditions.push({
-            user_id: { equals: user.user_id },
+            userId: { equals: user.userId },
           });
           break;
         }

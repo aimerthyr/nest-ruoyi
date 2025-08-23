@@ -1,19 +1,19 @@
 /// 部门表
 model SysDept {
-  dept_id     BigInt    @id @default(autoincrement()) @map("dept_id") /// 部门id，主键，自增
-  parent_id   BigInt    @default(0) @map("parent_id") /// 父部门id
-  ancestors   String    @default("") @map("ancestors") /// 祖级列表
-  dept_name   String    @default("") @map("dept_name") /// 部门名称
-  order_num   Int       @default(0) @map("order_num") /// 显示顺序
-  leader      String?   @map("leader") /// 负责人
-  phone       String?   @map("phone") /// 联系电话
-  email       String?   @map("email") /// 邮箱
-  status      String    @default("0") @map("status") /// 部门状态（0正常 1停用）
-  del_flag    String    @default("0") @map("del_flag") /// 删除标志（0代表存在 2代表删除）
-  create_by   String    @default("") @map("create_by") /// 创建者
-  create_time DateTime? @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间
-  update_by   String    @default("") @map("update_by") /// 更新者
-  update_time DateTime? @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
+  deptId     BigInt    @id @default(autoincrement()) @map("dept_id") /// 部门id，主键，自增
+  parentId   BigInt    @default(0) @map("parent_id") /// 父部门id
+  ancestors  String    @default("") @map("ancestors") /// 祖级列表
+  deptName   String    @default("") @map("dept_name") /// 部门名称
+  orderNum   Int       @default(0) @map("order_num") /// 显示顺序
+  leader     String?   @map("leader") /// 负责人
+  phone      String?   @map("phone") /// 联系电话
+  email      String?   @map("email") /// 邮箱
+  status     String    @default("0") @map("status") /// 部门状态（0正常 1停用）
+  delFlag    String    @default("0") @map("del_flag") /// 删除标志（0代表存在 2代表删除）
+  createBy   String    @default("") @map("create_by") /// 创建者
+  createTime DateTime? @default(now()) @map("create_time") @db.DateTime(0) /// 创建时间
+  updateBy   String    @default("") @map("update_by") /// 更新者
+  updateTime DateTime? @updatedAt @map("update_time") @db.DateTime(0) /// 更新时间
 
   // 创建与角色部门关联表的关联关系（虚拟字段，并不是数据库中真实列）
   roles SysRoleDept[]

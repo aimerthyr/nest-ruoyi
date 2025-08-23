@@ -63,7 +63,7 @@ export class PermissionService {
     }
     const user = await this._databaseService.sysUser.findFirst({
       where: {
-        user_name: loginDto.username,
+        userName: loginDto.username,
       },
     });
     if (!user) {
@@ -73,7 +73,7 @@ export class PermissionService {
     if (!isPasswordValid) {
       throw AjaxResultUtil.error('用户不存在/密码错误');
     }
-    const token = this._generateToken(user.user_id);
+    const token = this._generateToken(user.userId);
     return AjaxResultUtil.customSuccess({
       token,
     });
@@ -82,7 +82,7 @@ export class PermissionService {
   async getUserInfo(user: User) {
     const userInfo = await this._databaseService.sysUser.findUnique({
       where: {
-        user_id: user.user_id,
+        userId: user.userId,
       },
       omit: {
         password: true,
@@ -97,7 +97,7 @@ export class PermissionService {
     });
     const deptInfo = await this._databaseService.sysDept.findUnique({
       where: {
-        dept_id: userInfo!.dept_id!,
+        deptId: userInfo!.deptId!,
       },
     });
     return AjaxResultUtil.customSuccess({
@@ -124,26 +124,26 @@ export class PermissionService {
   async _queryUserMenuList(roleKeys: string[]) {
     const roleIds = await this._databaseService.sysRole.findMany({
       where: {
-        role_key: {
+        roleKey: {
           in: roleKeys,
         },
       },
       select: {
-        role_id: true,
+        roleId: true,
       },
     });
     const menu = await this._databaseService.sysRoleMenu.findMany({
       where: isSuperAdmin(roleKeys)
         ? {}
         : {
-            role_id: {
-              in: roleIds.map(v => v.role_id),
+            roleId: {
+              in: roleIds.map(v => v.roleId),
             },
           },
       include: {
         menu: {},
       },
-      distinct: ['menu_id'],
+      distinct: ['menuId'],
     });
     return menu.map(v => v.menu).filter(v => v.status === '0');
   }
@@ -161,7 +161,7 @@ export class PermissionService {
   /** 查询用户权限（数据库查询方法统一用 _query 做前缀） */
   private async _queryUserPermission(userId: bigint): Promise<string[]> {
     const result = await this._databaseService.sysUser.findUnique({
-      where: { user_id: userId },
+      where: { userId },
       include: {
         roles: {
           include: {
@@ -170,7 +170,7 @@ export class PermissionService {
                 /** 角色状态（需要启用） */
                 status: true,
                 /** 角色是否被删除 */
-                del_flag: true,
+                delFlag: true,
                 menus: {
                   include: {
                     menu: {
@@ -193,7 +193,7 @@ export class PermissionService {
     const permissions = new Set<string>();
     result.roles.forEach(userRole => {
       // 检查角色是否存在且状态正常
-      if (userRole.role && userRole.role.status === '0' && userRole.role.del_flag === '0') {
+      if (userRole.role && userRole.role.status === '0' && userRole.role.delFlag === '0') {
         userRole.role.menus.forEach(roleMenu => {
           // 检查菜单权限标识是否存在且菜单状态正常
           if (

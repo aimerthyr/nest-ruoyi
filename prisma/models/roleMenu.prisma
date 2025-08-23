@@ -1,12 +1,12 @@
 /// 角色菜单关联表
 model SysRoleMenu {
-  role_id BigInt @map("role_id") /// 角色ID
-  menu_id BigInt @map("menu_id") /// 菜单ID
+  roleId BigInt @map("role_id") /// 角色ID
+  menuId BigInt @map("menu_id") /// 菜单ID
 
   // fields 代表当前表的字段，references 代表关联表的字段
-  role SysRole @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
-  menu SysMenu @relation(fields: [menu_id], references: [menu_id], onDelete: Cascade)
+  role SysRole @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  menu SysMenu @relation(fields: [menuId], references: [menuId], onDelete: Cascade)
 
-  @@id([role_id, menu_id])
+  @@id([roleId, menuId])
   @@map("sys_role_menu")
 }

@@ -10,6 +10,7 @@
     "start:dev": "docker compose --env-file .env up -d && prisma generate && nest start --watch --debug --inspect=0.0.0.0:9229",
     "start:prod": "node dist/main",
     "migrate:dev": "dotenv -e .env -- prisma migrate dev && prisma generate",
+    "reset:dev": "prisma migrate reset",
     "seed": "swc ./prisma/seed.ts | node",
     "query": "swc ./prisma/query.ts | node",
     "prepare": "husky"

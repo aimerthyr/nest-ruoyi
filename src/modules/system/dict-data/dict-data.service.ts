@@ -10,7 +10,7 @@ export class DictDataService {
   async getDictTypeData(dictType: string) {
     const result = await this._databaseService.sysDictData.findMany({
       where: {
-        dict_type: dictType,
+        dictType: dictType,
         status: '0',
       },
     });

@@ -1,10 +1,10 @@
 model SysRoleDept {
-  role_id BigInt @map("role_id") /// 角色ID
-  dept_id BigInt @map("dept_id") /// 部门ID
+  roleId BigInt @map("role_id") /// 角色ID
+  deptId BigInt @map("dept_id") /// 部门ID
 
-  role SysRole @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
-  dept SysDept @relation(fields: [dept_id], references: [dept_id], onDelete: Cascade)
+  role SysRole @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  dept SysDept @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
 
-  @@id([role_id, dept_id])
+  @@id([roleId, deptId])
   @@map("sys_role_dept")
 }
