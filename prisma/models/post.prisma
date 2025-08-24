@@ -1,6 +1,6 @@
 /// 岗位信息表
 model SysPost {
-  postId     BigInt    @id @default(autoincrement()) @map("post_id") /// 岗位ID，主键自增
+  postId     Int       @id @default(autoincrement()) @map("post_id") /// 岗位ID，主键自增
   postCode   String    @map("post_code") @db.VarChar(64) /// 岗位编码
   postName   String    @map("post_name") @db.VarChar(50) /// 岗位名称
   postSort   Int       @map("post_sort") @db.Int /// 显示顺序

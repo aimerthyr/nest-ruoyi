@@ -1,8 +1,8 @@
 /// 菜单权限表
 model SysMenu {
-  menuId     BigInt    @id @default(autoincrement()) @map("menu_id")
+  menuId     Int       @id @default(autoincrement()) @map("menu_id")
   menuName   String    @map("menu_name") @db.VarChar(50) /// 菜单名称
-  parentId   BigInt    @default(0) @map("parent_id") /// 父菜单ID
+  parentId   Int       @default(0) @map("parent_id") /// 父菜单ID
   orderNum   Int       @default(0) @map("order_num") /// 显示顺序
   path       String    @default("") @map("path") @db.VarChar(200) /// 路由地址
   component  String?   @map("component") @db.VarChar(255) /// 组件路径，可空

@@ -1,7 +1,7 @@
 /// 用户岗位关联表
 model SysUserPost {
-  userId BigInt @map("user_id") /// 用户id
-  postId BigInt @map("post_id") /// 岗位ID
+  userId Int @map("user_id") /// 用户id
+  postId Int @map("post_id") /// 岗位ID
 
   user SysUser @relation(fields: [userId], references: [userId], onDelete: Cascade)
   post SysPost @relation(fields: [postId], references: [postId], onDelete: Cascade)

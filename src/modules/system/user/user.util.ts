@@ -3,7 +3,7 @@ import { SysDept } from '@prisma/client';
 type DeptChildren = SysDept & { children: DeptChildren[] };
 
 export function buildDeptTree(deptList: DeptChildren[]) {
-  const deptMap = new Map<bigint, DeptChildren>([]);
+  const deptMap = new Map<number, DeptChildren>([]);
   deptList.forEach(v => {
     v.children = [];
     deptMap.set(v.deptId, v);
@@ -11,7 +11,7 @@ export function buildDeptTree(deptList: DeptChildren[]) {
 
   const result: DeptChildren[] = [];
   deptList.forEach(cur => {
-    if (cur.parentId !== BigInt(0)) {
+    if (cur.parentId !== 0) {
       const parent = deptMap.get(cur.parentId);
       if (parent) {
         parent.children.push(cur);

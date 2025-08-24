@@ -1,6 +1,6 @@
 /// 角色信息表
 model SysRole {
-  roleId            BigInt    @id @default(autoincrement()) @map("role_id") /// 角色ID
+  roleId            Int       @id @default(autoincrement()) @map("role_id") /// 角色ID
   roleName          String    @map("role_name") @db.VarChar(30) /// 角色名称
   roleKey           String    @map("role_key") @db.VarChar(100) /// 角色权限字符串
   roleSort          Int       @map("role_sort") @db.Int /// 显示顺序

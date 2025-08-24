@@ -6,7 +6,7 @@ type MenuChildren = SysMenu & { children?: MenuChildren[] };
 
 /** 判断是否一级菜单内嵌跳转 */
 function isMenuFrame(menu: SysMenu): boolean {
-  return menu.parentId === BigInt(0) && menu.menuType === 'C' && menu.isFrame === 1;
+  return menu.parentId === 0 && menu.menuType === 'C' && menu.isFrame === 1;
 }
 
 /** 判断是否内部外网链接 */
@@ -16,7 +16,7 @@ function isInnerLink(menu: SysMenu): boolean {
 
 /** 判断是否父级视图菜单 */
 function isParentView(menu: SysMenu): boolean {
-  return menu.parentId !== BigInt(0) && menu.menuType === 'M';
+  return menu.parentId !== 0 && menu.menuType === 'M';
 }
 
 /** 内链路径处理 */
@@ -27,7 +27,7 @@ function innerLinkReplaceEach(path: string): string {
 /** 获取组件名 */
 function getComponent(menu: SysMenu): string {
   if (menu.component && !isMenuFrame(menu)) return menu.component;
-  if (!menu.component && menu.parentId !== BigInt(0) && isInnerLink(menu)) return 'InnerLink';
+  if (!menu.component && menu.parentId !== 0 && isInnerLink(menu)) return 'InnerLink';
   if (!menu.component && isParentView(menu)) return 'ParentView';
   return 'Layout';
 }
@@ -37,12 +37,12 @@ function getPath(menu: SysMenu): string {
   let routerPath = menu.path;
 
   // 内链处理
-  if (menu.parentId !== BigInt(0) && isInnerLink(menu)) {
+  if (menu.parentId !== 0 && isInnerLink(menu)) {
     routerPath = innerLinkReplaceEach(routerPath);
   }
 
   // 一级目录
-  if (menu.parentId === BigInt(0) && menu.menuType === 'M' && menu.isFrame === 1) {
+  if (menu.parentId === 0 && menu.menuType === 'M' && menu.isFrame === 1) {
     routerPath = `/${routerPath}`;
   } else if (isMenuFrame(menu)) {
     routerPath = '/';
@@ -52,7 +52,7 @@ function getPath(menu: SysMenu): string {
 
 /** 构建前端路由 */
 export function buildRouteTree(menuList: MenuChildren[]): MenuItemVO[] {
-  const menuMap = new Map<bigint, MenuChildren>();
+  const menuMap = new Map<number, MenuChildren>();
   const result: MenuChildren[] = [];
 
   // 做一个 map 然后每一项都设置 children
@@ -65,7 +65,7 @@ export function buildRouteTree(menuList: MenuChildren[]): MenuItemVO[] {
   // 构建树形结构
   menuList.forEach(menu => {
     if (!menu.path || menu.path === '#') return;
-    if (menu.parentId !== BigInt(0) && menuMap.has(menu.parentId)) {
+    if (menu.parentId !== 0 && menuMap.has(menu.parentId)) {
       menuMap.get(menu.parentId)!.children!.push(menu);
     } else {
       result.push(menu);
@@ -98,7 +98,7 @@ export function buildRouteTree(menuList: MenuChildren[]): MenuItemVO[] {
       if (menu.children && menu.children.length) {
         route.children = buildRoutes(menu.children);
         // 仅一级目录且有子路由才设置 alwaysShow
-        if (menu.parentId === BigInt(0)) route.alwaysShow = true;
+        if (menu.parentId === 0) route.alwaysShow = true;
       }
 
       return route;

@@ -1,5 +1,5 @@
 export interface DeptTreeItemVO {
-  id: bigint;
+  id: number;
   label: string;
   disabled: boolean;
   children?: DeptTreeItemVO[];

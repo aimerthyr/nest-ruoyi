@@ -83,7 +83,7 @@ export class DataScopeService {
             if (user.deptId) {
               // 使用参数化查询防止SQL注入
               const data = await this._databaseService.$queryRaw<
-                Array<{ dept_id: bigint }>
+                Array<{ dept_id: number }>
               >`SELECT * FROM sys_dept WHERE FIND_IN_SET(${user.deptId.toString()}, ancestors) > 0`;
               orConditions.push({
                 deptId: { in: [...data.map(v => v.dept_id), user.deptId] },

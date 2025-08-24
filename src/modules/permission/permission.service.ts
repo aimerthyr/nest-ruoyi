@@ -43,10 +43,10 @@ export class PermissionService {
     });
   }
 
-  private _generateToken(userId: bigint) {
+  private _generateToken(userId: number) {
     return this._jwtService.sign(
       {
-        sub: userId.toString(),
+        sub: userId,
       },
       {
         secret: process.env.JWT_SECRET,
@@ -158,7 +158,7 @@ export class PermissionService {
   }
 
   /** 查询用户权限（数据库查询方法统一用 _query 做前缀） */
-  private async _queryUserPermission(userId: bigint): Promise<string[]> {
+  private async _queryUserPermission(userId: number): Promise<string[]> {
     const result = await this._databaseService.sysUser.findUnique({
       where: { userId },
       include: {
@@ -210,7 +210,7 @@ export class PermissionService {
   }
 
   /** 通过 userId 获取用户权限 */
-  async getUserPermissions(userId: bigint): Promise<string[]> {
+  async getUserPermissions(userId: number): Promise<string[]> {
     const cacheKey = `${REDIS_USER_PERMISSION}:${userId}`;
     const cachedPermissions = await this._redisService.get(cacheKey);
     if (cachedPermissions) {

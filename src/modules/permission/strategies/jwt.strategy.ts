@@ -27,8 +27,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   /** 验证通过后 passport 会自动调用 validate 并把 token 解析为签名前的 payload  */
-  async validate(payload: { sub: bigint }): Promise<Request['user']> {
-    const cacheKey = `${REDIS_USER_INFO}:${payload.sub.toString()}`;
+  async validate(payload: { sub: number }): Promise<Request['user']> {
+    const cacheKey = `${REDIS_USER_INFO}:${payload.sub}`;
     const cacheUser = await this._redisService.get<Request['user']>(cacheKey);
     if (cacheUser) {
       return cacheUser;

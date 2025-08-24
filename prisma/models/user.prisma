@@ -1,8 +1,8 @@
 /// 用户信息表
 model SysUser {
   // @id 代表主键（一般都需要设置自增）
-  userId        BigInt   @id @default(autoincrement()) @map("user_id") /// 用户ID
-  deptId        BigInt?  @map("dept_id") /// 部门ID
+  userId        Int      @id @default(autoincrement()) @map("user_id") /// 用户ID
+  deptId        Int?     @map("dept_id") /// 部门ID
   // VarChar 可变长度（最大是 30 ）
   userName      String   @map("user_name") @db.VarChar(30) /// 用户账号
   nickName      String   @map("nick_name") @db.VarChar(30) /// 用户昵称

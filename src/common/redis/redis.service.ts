@@ -1,4 +1,3 @@
-import { bigintReplacer } from '@/utils';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -19,7 +18,7 @@ export class RedisService {
   }
 
   async set<T = any>(key: string, value: T, ttl?: number): Promise<void> {
-    const strValue = JSON.stringify(value, bigintReplacer);
+    const strValue = JSON.stringify(value);
     await this.cacheManager.set(key, strValue, ttl);
   }
 

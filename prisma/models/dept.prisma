@@ -1,7 +1,7 @@
 /// 部门表
 model SysDept {
-  deptId     BigInt    @id @default(autoincrement()) @map("dept_id") /// 部门id，主键，自增
-  parentId   BigInt    @default(0) @map("parent_id") /// 父部门id
+  deptId     Int       @id @default(autoincrement()) @map("dept_id") /// 部门id，主键，自增
+  parentId   Int       @default(0) @map("parent_id") /// 父部门id
   ancestors  String    @default("") @map("ancestors") /// 祖级列表
   deptName   String    @default("") @map("dept_name") /// 部门名称
   orderNum   Int       @default(0) @map("order_num") /// 显示顺序

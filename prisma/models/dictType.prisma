@@ -1,6 +1,6 @@
 /// 字典类型表
 model SysDictType {
-  dictId     BigInt    @id @default(autoincrement()) @map("dict_id") /// 字典主键
+  dictId     Int       @id @default(autoincrement()) @map("dict_id") /// 字典主键
   dictName   String    @default("") @map("dict_name") @db.VarChar(100) /// 字典名称
   dictType   String    @unique @map("dict_type") @db.VarChar(100) /// 字典类型
   status     String    @default("0") @map("status") @db.Char(1) /// 状态（0正常 1停用）
