@@ -34,6 +34,17 @@ export class UserService {
         password: true,
       },
     });
+    const depts = await this._databaseService.sysDept.findMany({
+      where: {
+        deptId: {
+          in: users.filter(v => Boolean(v.deptId)).map(v => v.deptId!),
+        },
+      },
+    });
+    const deptMap = new Map(depts.map(v => [v.deptId.toString(), v]));
+    users.forEach(v => {
+      (v as any).dept = deptMap.get(v.deptId?.toString() || '') || null;
+    });
     const total = await this._databaseService.sysUser.count({ where: dataScopeFilter });
     return AjaxResultUtil.page(users, total);
   }
