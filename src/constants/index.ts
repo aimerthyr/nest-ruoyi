@@ -11,5 +11,3 @@ export const REDIS_USER_PERMISSION = 'user:permission';
 /** 30 分钟 */
 export const MIN_30 = 30 * 60 * 1000;
 // #endregion
-
-export const DATA_SCOPE_KEY = 'DATA_SCOPE';

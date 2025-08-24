@@ -9,14 +9,14 @@ export class UserController {
   constructor(private readonly _userService: UserService) {}
 
   @RequireAllPermission('system:user:list')
-  @DataScope()
+  @DataScope('dept')
   @Get('deptTree')
   getDeptTree(@Req() req: Request) {
     return this._userService.getDeptTree(req.dataScopeFilter);
   }
 
   @RequireAllPermission('system:user:list')
-  @DataScope()
+  @DataScope('user')
   @Get('list')
   getUserList(@Query() query: PageQueryDTO, @Req() req: Request) {
     return this._userService.getUserList(query, req.dataScopeFilter);

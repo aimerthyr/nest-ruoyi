@@ -1,5 +1,5 @@
 import { DataScopeService } from '@/services/dataScope.service';
-import { DATA_SCOPE_KEY } from '@constants/index';
+import { DATA_SCOPE_KEY, DataScopeQueryType } from '@decorators';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -15,16 +15,22 @@ export class DataScopeInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     // 检查 controller 方法上是否有 @DataScope() 装饰器
-    const hasDataScope = this.reflector.get<boolean>(DATA_SCOPE_KEY, context.getHandler());
+    const dataScopeQueryType = this.reflector.get<DataScopeQueryType>(
+      DATA_SCOPE_KEY,
+      context.getHandler(),
+    );
 
     // 如果没有 @DataScope() 装饰器，直接执行原方法
-    if (!hasDataScope) {
+    if (!dataScopeQueryType) {
       return next.handle();
     }
 
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
-    const dataScopeFilter = await this.dataScopeService.getDataScopeFilter(user);
+    const dataScopeFilter = await this.dataScopeService.getDataScopeFilter(
+      user,
+      dataScopeQueryType,
+    );
     request.dataScopeFilter = dataScopeFilter;
     return next.handle();
   }

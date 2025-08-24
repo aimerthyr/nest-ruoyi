@@ -15,6 +15,8 @@ export function buildDeptTree(deptList: DeptChildren[]) {
       const parent = deptMap.get(cur.parentId);
       if (parent) {
         parent.children.push(cur);
+      } else {
+        result.push(cur);
       }
     } else {
       result.push(cur);
