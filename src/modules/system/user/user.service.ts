@@ -2,7 +2,9 @@ import { AjaxResultUtil } from '@/utils';
 import { DatabaseService } from '@common/database';
 import { DataScopeFilter, PageQueryDTO } from '@common/types';
 import { Injectable } from '@nestjs/common';
-import { buildDeptTree } from './user.util';
+import { Prisma } from '@prisma/client';
+import { UserQueryDTO } from './dto/userQuery.dto';
+import { buildDeptTree, buildExcelData } from './user.util';
 
 @Injectable()
 export class UserService {
@@ -24,12 +26,23 @@ export class UserService {
     return AjaxResultUtil.success(deptTree);
   }
 
-  async getUserList(query: PageQueryDTO, dataScopeFilter: DataScopeFilter) {
+  async getUserList(query: UserQueryDTO, dataScopeFilter: DataScopeFilter) {
     const { pageNum, pageSize } = query;
+    const where: Prisma.SysUserWhereInput = {
+      ...dataScopeFilter,
+      deptId: query.deptId,
+      userName: { contains: query.userName },
+      phonenumber: { contains: query.phonenumber },
+      status: query.status,
+      createTime: {
+        gte: query['params[beginTime]'] ? new Date(query['params[beginTime]']) : undefined,
+        lte: query['params[endTime]'] ? new Date(query['params[endTime]']) : undefined,
+      },
+    };
     const users = await this._databaseService.sysUser.findMany({
       skip: (pageNum - 1) * pageSize,
       take: pageSize,
-      where: dataScopeFilter,
+      where,
       omit: {
         password: true,
       },
@@ -45,7 +58,17 @@ export class UserService {
     users.forEach(v => {
       (v as any).dept = deptMap.get(v.deptId?.toString() || '') || null;
     });
-    const total = await this._databaseService.sysUser.count({ where: dataScopeFilter });
+    const total = await this._databaseService.sysUser.count({ where });
     return AjaxResultUtil.page(users, total);
+  }
+
+  async exportFile(query: PageQueryDTO, dataScopeFilter: DataScopeFilter) {
+    const { pageNum, pageSize } = query;
+    const users = await this._databaseService.sysUser.findMany({
+      skip: (pageNum - 1) * pageSize,
+      take: pageSize,
+      where: dataScopeFilter,
+    });
+    return await buildExcelData(users);
   }
 }
