@@ -1,12 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
-import { ExceptionsFilter } from './filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalFilters(new ExceptionsFilter());
+  // 使用 Winston Logger 做日志记录
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // 自动剥离无效字段

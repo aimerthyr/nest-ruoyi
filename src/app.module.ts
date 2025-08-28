@@ -2,12 +2,15 @@ import { createKeyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './common/database';
+import { winstonConfig } from './common/logger/winston.config';
 import { RedisModule } from './common/redis/redis.module';
 import { MIN_30 } from './constants';
+import { ExceptionsFilter } from './filters';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { DataScopeInterceptor } from './interceptors';
@@ -22,6 +25,7 @@ import { ServicesModule } from './services/services.module';
       expandVariables: true,
       cache: true,
     }),
+    WinstonModule.forRoot(winstonConfig),
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => {
@@ -56,6 +60,10 @@ import { ServicesModule } from './services/services.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: DataScopeInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionsFilter,
     },
   ],
 })

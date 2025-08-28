@@ -1,10 +1,12 @@
 import { ServiceException } from '@/utils';
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger as WinstonLogger } from 'winston';
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(ExceptionsFilter.name);
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
   catch(exception: any, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
@@ -32,7 +34,9 @@ export class ExceptionsFilter implements ExceptionFilter {
     if (code !== 404) {
       this.logger.error(
         `业务错误码 ${code}，错误信息: ${msg}，请求路径: ${request.method} ${request.url}`,
-        exception instanceof Error ? exception.stack : '无堆栈信息',
+        {
+          stack: exception instanceof Error ? exception.stack : '无堆栈信息',
+        },
       );
     }
 
