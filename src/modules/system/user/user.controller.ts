@@ -1,9 +1,13 @@
 import { PageQueryDTO } from '@common/types';
 import { DataScope, RequireAllPermission } from '@decorators';
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -12,7 +16,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
+import { UserCreateDTO } from './dto/userCreate.dto';
 import { UploadFileDTO, UserQueryDTO } from './dto/userQuery.dto';
+import { UserChangeStatusDTO, UserUpdateDTO } from './dto/userUpdate.dto';
 import { UserService } from './user.service';
 
 @Controller('system/user')
@@ -51,5 +57,40 @@ export class UserController {
       'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent('用户列表.xlsx')}`,
     });
     res.send(buffer);
+  }
+
+  @Get()
+  getUserCreateConf(@Req() req: Request) {
+    return this._userService.getUserCreateConf(req.user);
+  }
+
+  @RequireAllPermission('system:user:add')
+  @Post()
+  createUser(@Body() createDTO: UserCreateDTO) {
+    return this._userService.createUser(createDTO);
+  }
+
+  @RequireAllPermission('system:user:query')
+  @Get(':userId')
+  getUserInfo(@Param('userId') userId: number) {
+    return this._userService.getUserInfo(userId);
+  }
+
+  @RequireAllPermission('system:user:remove')
+  @Delete(':userId')
+  deleteUser(@Param('userId') userId: number) {
+    return this._userService.deleteUser(userId);
+  }
+
+  @RequireAllPermission('system:user:edit')
+  @Put()
+  updateUser(@Body() updateDTO: UserUpdateDTO) {
+    return this._userService.updateUser(updateDTO);
+  }
+
+  @RequireAllPermission('system:user:edit')
+  @Put('/changeStatus')
+  changeStatus(@Body() changeStatusDTO: UserChangeStatusDTO) {
+    return this._userService.changeStatus(changeStatusDTO);
   }
 }

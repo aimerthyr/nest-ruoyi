@@ -96,7 +96,7 @@ export class PermissionService {
     });
     const deptInfo = await this._databaseService.sysDept.findUnique({
       where: {
-        deptId: userInfo!.deptId!,
+        deptId: userInfo!.deptId || -1,
       },
     });
     return AjaxResultUtil.customSuccess({

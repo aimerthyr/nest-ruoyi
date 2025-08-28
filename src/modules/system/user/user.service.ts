@@ -3,7 +3,10 @@ import { DatabaseService } from '@common/database';
 import { DataScopeFilter, PageQueryDTO } from '@common/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { hashSync } from 'bcrypt';
+import { UserCreateDTO } from './dto/userCreate.dto';
 import { UserQueryDTO } from './dto/userQuery.dto';
+import { UserChangeStatusDTO, UserUpdateDTO } from './dto/userUpdate.dto';
 import { buildDeptTree, buildExcelData } from './user.util';
 
 @Injectable()
@@ -38,6 +41,7 @@ export class UserService {
         gte: query['params[beginTime]'] ? new Date(query['params[beginTime]']) : undefined,
         lte: query['params[endTime]'] ? new Date(query['params[endTime]']) : undefined,
       },
+      delFlag: '0',
     };
     const users = await this._databaseService.sysUser.findMany({
       skip: (pageNum - 1) * pageSize,
@@ -70,5 +74,120 @@ export class UserService {
       where: dataScopeFilter,
     });
     return await buildExcelData(users);
+  }
+
+  async getUserCreateConf(user: User) {
+    const posts = await this._databaseService.sysPost.findMany({
+      where: {
+        status: '0',
+      },
+    });
+    const roles = await this._databaseService.sysRole.findMany({
+      where: {
+        roleKey: { in: user.roleKeys },
+        status: '0',
+        delFlag: '0',
+      },
+    });
+    return AjaxResultUtil.customSuccess({
+      posts,
+      roles,
+    });
+  }
+
+  async createUser(createDTO: UserCreateDTO) {
+    const { postIds, roleIds, ...userData } = createDTO;
+    await this._databaseService.$transaction(async prisma => {
+      await prisma.sysUser.create({
+        data: {
+          ...userData,
+          password: hashSync(createDTO.password, 10),
+          loginDate: new Date(),
+          pwdUpdateDate: new Date(),
+          posts: {
+            create: postIds?.length ? postIds.map(id => ({ postId: id })) : [],
+          },
+          roles: {
+            create: roleIds?.length ? roleIds.map(id => ({ roleId: id })) : [],
+          },
+        },
+      });
+    });
+    return AjaxResultUtil.customSuccess({ msg: '操作成功' });
+  }
+
+  async getUserInfo(userId: number) {
+    const data = await this._databaseService.sysUser.findUnique({
+      where: { userId },
+      include: {
+        posts: {
+          include: {
+            post: {},
+          },
+        },
+        roles: {
+          include: {
+            role: {},
+          },
+        },
+      },
+      omit: {
+        password: true,
+      },
+    });
+    const posts = await this._databaseService.sysPost.findMany({ where: { status: '0' } });
+    const roles = await this._databaseService.sysRole.findMany({
+      where: { status: '0', roleKey: { not: 'admin' } },
+    });
+    return AjaxResultUtil.customSuccess({
+      data,
+      postIds: data?.posts?.map(v => v.postId),
+      posts,
+      roleIds: data?.roles?.map(v => v.roleId),
+      roles,
+    });
+  }
+
+  async deleteUser(userId: number) {
+    await this._databaseService.sysUser.update({
+      where: { userId },
+      data: {
+        delFlag: '2',
+      },
+    });
+    return AjaxResultUtil.customSuccess({ msg: '操作成功' });
+  }
+
+  async updateUser(updateDTO: UserUpdateDTO) {
+    const { postIds, roleIds, ...userData } = updateDTO;
+    await this._databaseService.$transaction(async tx => {
+      await tx.sysUser.update({
+        where: { userId: updateDTO.userId },
+        data: {
+          ...userData,
+          posts: {
+            set: postIds?.length
+              ? postIds.map(postId => ({ userId_postId: { userId: updateDTO.userId, postId } }))
+              : [],
+          },
+          roles: {
+            set: roleIds?.length
+              ? roleIds.map(roleId => ({ userId_roleId: { userId: updateDTO.userId, roleId } }))
+              : [],
+          },
+        },
+      });
+    });
+    return AjaxResultUtil.customSuccess({ msg: '操作成功' });
+  }
+
+  async changeStatus(changeStatusDTO: UserChangeStatusDTO) {
+    await this._databaseService.sysUser.update({
+      where: { userId: changeStatusDTO.userId },
+      data: {
+        status: changeStatusDTO.status,
+      },
+    });
+    return AjaxResultUtil.customSuccess({ msg: '操作成功' });
   }
 }
